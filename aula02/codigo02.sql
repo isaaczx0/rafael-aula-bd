@@ -1,4 +1,4 @@
--- Active: 1787610103192@@127.0.0.1@5432@bd_aula@public
+-- Active: 1787702544167@@127.0.0.1@5432@bd_vendas@public
 
 CREATE TABLE notas_alunos (
     id             INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -64,4 +64,4 @@ INSERT INTO notas_alunos (aluno_nome, turma, disciplina, nota, faltas, data_aval
 
 SELECT nota, disciplina, aluno_nome, turma FROM notas_alunos WHERE nota >= 70 and disciplina = 'Portugues' ORDER BY nota DESC ;
 
-SELECT disciplina, AVG(nota) AS "Média_Notas" FROM notas_alunos GROUP BY disciplina;
+SELECT disciplina, COUNT(*) as "Avaliações" AVG(nota) AS "Média" FROM notas_alunos GROUP BY disciplina;
