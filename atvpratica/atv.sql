@@ -1,4 +1,4 @@
--- Active: 1789423360460@@127.0.0.1@5432@bd_hortifruti@public
+-- Active: 1789517406326@@127.0.0.1@5432@bd_hortifruti@public
 CREATE DATABASE bd_hortifruti;
 
 DROP TABLE IF EXISTS itens_venda;
@@ -74,17 +74,22 @@ VALUES
 (3017, '08-08-2026', NULL, 4, 'Morango', 'Fruta', 'UN', 3.000, 9.90);
 
 /*Consulta 1*/
-SELECT * FROM itens_venda(venda_id, produto_nome, categoria, unidade)
+SELECT DISTINCT produto_id, produto_nome, categoria, unidade 
+FROM itens_venda
+ORDER BY categoria, produto_nome;
 
 
 /*Consulta 2*/
 SELECT * FROM itens_venda(venda_id, produto_nome, valor_unitario)
+/* WHERE valor_unitario < 5.00 and valor_unitario > 3.00 */
+BETWEEN 3.00 and 5.00
+
 
 /*Consulta 3*/
 SELECT * FROM itens_venda(venda_id, data_venda, produto_nome, quantidade)
 
 /*Consulta 4*/
-SELECT * FROM itens_venda(venda_id, data_venda, bairro_entrega, )
+SELECT DISTINCT * FROM itens_venda(venda_id, data_venda, bairro_entrega, )
 
 /*Consulta 5*/
 SELECT * FROM itens_venda(quantidade * valor_unitario)
