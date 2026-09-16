@@ -1,4 +1,4 @@
--- Active: 1789517406326@@127.0.0.1@5432@bd_hortifruti@public
+-- Active: 1789597933117@@127.0.0.1@5432@bd_hortifruti@public
 CREATE DATABASE bd_hortifruti;
 
 DROP TABLE IF EXISTS itens_venda;
@@ -80,22 +80,37 @@ ORDER BY categoria, produto_nome;
 
 
 /*Consulta 2*/
-SELECT * FROM itens_venda(venda_id, produto_nome, valor_unitario)
+SELECT venda_id, produto_nome, valor_unitario FROM itens_venda
 /* WHERE valor_unitario < 5.00 and valor_unitario > 3.00 */
-BETWEEN 3.00 and 5.00
+WHERE categoria IN ('Legume', 'Verdura')
+and valor_unitario BETWEEN 3 AND 5
+ORDER BY valor_unitario DESC, venda_id;
 
 
 /*Consulta 3*/
-SELECT * FROM itens_venda(venda_id, data_venda, produto_nome, quantidade)
+SELECT venda_id, data_venda, produto_nome, quantidade FROM itens_venda
+WHERE produto_nome LIKE 'Batata%'
+ORDER BY data_venda, venda_id;
 
 /*Consulta 4*/
-SELECT DISTINCT * FROM itens_venda(venda_id, data_venda, bairro_entrega, )
+SELECT DISTINCT venda_id, data_venda, bairro_entrega FROM itens_venda
+WHERE bairro_entrega is  not NULL
+ORDER BY venda_id;
 
 /*Consulta 5*/
-SELECT * FROM itens_venda(quantidade * valor_unitario)
+SELECT round(quantidade * valor_unitario, 2) as valor_item
+FROM itens_venda
+ORDER BY valor_item DESC, venda_id
+LIMIT 5 OFFSET 10;
 
 /*Consulta 6*/
-SELECT * FROM itens_venda()
+SELECT venda_id, data_venda, COALESCE(bairro_entrega, 'Sem observacao') AS observacao
+ count(quantidade) as Itens, 
+ SUM(valor_unitario) as Valor_total FROM itens_venda
+GROUP BY
+    venda_id, data_venda
+ORDER BY Valor_total DESC
+
 
 /*Consulta 7*/
 SELECT * FROM itens_venda()
