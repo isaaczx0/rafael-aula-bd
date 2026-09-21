@@ -1,4 +1,4 @@
--- Active: 1789597933117@@127.0.0.1@5432@bd_hortifruti@public
+-- Active: 1789949305354@@127.0.0.1@5432@bd_hortifruti@public
 CREATE DATABASE bd_hortifruti;
 
 DROP TABLE IF EXISTS itens_venda;
@@ -104,26 +104,84 @@ ORDER BY valor_item DESC, venda_id
 LIMIT 5 OFFSET 10;
 
 /*Consulta 6*/
-SELECT venda_id, data_venda, COALESCE(bairro_entrega, 'Sem observacao') AS observacao
- count(quantidade) as Itens, 
- SUM(valor_unitario) as Valor_total FROM itens_venda
+SELECT venda_id, data_venda,
+COUNT(*) as Itens, 
+round(SUM(quantidade * valor_unitario),2) as Valor_total,
+COALESCE(bairro_entrega, 'Retirada no balcão') as destino
+FROM itens_venda
+
 GROUP BY
-    venda_id, data_venda
-ORDER BY Valor_total DESC
+    venda_id, data_venda, bairro_entrega
+ORDER BY Valor_total DESC;
 
 
 /*Consulta 7*/
-SELECT * FROM itens_venda()
+SELECT COUNT(DISTINCT venda_id)as vendas,
+count(*) itens,
+round(SUM(quantidade * valor_unitario),2) as faturamento
+FROM itens_venda
+GROUP BY data_venda
+ORDER BY data_venda;
 
 /*Consulta 8*/
-SELECT * FROM itens_venda()
+SELECT produto_id, produto_nome, unidade, sum(quantidade) as qtd_total,
+round(SUM(quantidade * valor_unitario),2) as faturamento,
+SUM(quantidade * valor_unitario)/ sum(quantidade),
+round(AVG(valor_unitario),2) AS media_simples,
+round(sum(quantidade *  valor_unitario)/sum(quantidade),2) as media_ponderada
+FROM itens_venda
+GROUP BY produto_id, produto_nome, unidade
+ORDER BY faturamento DESC
 
 /*Consulta 9*/
-SELECT * FROM itens_venda()
-
+SELECT categoria, unidade,
+count(*) as itens,
+round(SUM(quantidade * valor_unitario),2) as faturamento,
+sum(quantidade) as qtd_total
+FROM itens_venda
+GROUP BY categoria, unidade
+ORDER BY categoria, unidade;
 
 /*Consulta 10*/
-SELECT * FROM itens_venda()
+SELECT bairro_entrega,
+count(DISTINCT venda_id),
+round(SUM(quantidade * valor_unitario),2) as faturamento
+FROM itens_venda
+GROUP BY bairro_entrega
+HAVING sum(quantidade * valor_unitario) > 40
+ORDER BY faturamento DESC
 
 /*Consulta 11*/
-SELECT * FROM itens_venda()
+SELECT venda_id,
+ROUND(SUM(quantidade * valor_unitario), 2) AS total_arredondado,
+SUM(ROUND(quantidade * valor_unitario, 2)) AS soma_itens_arredondados
+FROM itens_venda
+GROUP BY venda_id
+HAVING round(sum(quantidade * valor_unitario),2)
+<>
+sum(round(quantidade*valor_unitario,2))
+ORDER BY venda_id
+
+/*
+    Respostas parte 4
+
+    1=
+itens_venda se repete em: venda_id, data_venda, bairro_entrega 
+produto se repete em: produto_id, produto_nome, categoria, unidade
+pode explicado atraves deste exemplo: se venda 3005 tem 4 itens, o venda_id, data, e bairro aparecem 4 vezes
+
+valor unitario se repete diferente pois é usado somente em determinada venda, e valor é variavel
+se criasse diferentes nas linhas 1 e 8 provavelmente geraria um erro, 
+a 1 referir aos nomes dos produtos de forma diferente, a 8 separar dados do mesmo produto em grupos diferentes, precisando de group by
+
+    2=
+A tabela não garante que a quantidade seja maior que zero
+e também não impede o mesmo produto de aparecer duas vezes na mesma venda
+Exemplo de valor inválido que poderia ser aceito: quantidade = -2
+
+
+    3=
+No morango, a média ponderada é menor porque foram vendidas mais unidades
+nos preços menores. No abacaxi, foram vendidas mais unidades nos preços maiores
+No cheiro-verde, os preços são iguais, por isso as duas médias também são iguais
+ */
