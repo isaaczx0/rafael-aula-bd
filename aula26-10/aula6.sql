@@ -1,4 +1,4 @@
--- Active: 1793054201462@@127.0.0.1@5432@bd_plano_de_saude@public
+-- Active: 1793145303535@@127.0.0.1@5432@bd_plano_de_saude@public
 -- Recomeco: primeiro o que depende, depois o que e referenciado
 -- Active: 1790121133584@@127.0.0.1@5432@bd_hortifruti@public
 CREATE DATABASE bd_plano_de_saude;
@@ -205,3 +205,16 @@ FROM
     pessoa AS pe
     inner join medico as m on m.pessoa_id = pe.id
     inner join especialidade as e on e.id = m.especialidade_id;
+
+select
+    c.id AS consulta, cv.nome AS convenio
+FROM
+    consulta as c
+    cross join convenio as cv
+where cv.nome = 'Vida Plena';
+
+select
+    c.id AS consulta, cv.nome AS convenio, c.convenio_id 
+FROM
+    consulta as c
+    cross join convenio as cv
